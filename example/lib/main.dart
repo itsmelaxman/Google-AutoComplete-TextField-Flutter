@@ -75,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Container(
       child: GooglePlaceAutoCompleteTextField(
         textEditingController: newAPIController,
-        googleAPIKey: "YOUR GOOGLE API KEY",
+        googleAPIKey: "AIzaSyDUzmngsDFU_EGojKTtXl2fttwqGnuuwqE",
         useNewAPI: true, // Use the new Places API (v1)
         inputDecoration: InputDecoration(
           hintText: "Search with New API (v1)",
