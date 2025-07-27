@@ -168,13 +168,64 @@ class _GooglePlaceAutoCompleteTextFieldState
     const String apiURL =
         "https://places.googleapis.com/v1/places:autocomplete";
 
-    // Simplified request body for testing
+    // Build request body with proper parameters
     Map<String, dynamic> requestBody = {"input": text};
 
-    if (_cancelToken?.isCancelled == false) {
-      _cancelToken?.cancel();
-      _cancelToken = CancelToken();
+    // Add language code if specified
+    if (widget.language != null && widget.language!.isNotEmpty) {
+      requestBody["languageCode"] = widget.language;
     }
+
+    // Add region code if countries are specified
+    if (widget.countries != null && widget.countries!.isNotEmpty) {
+      requestBody["regionCode"] = widget.countries!.first.toUpperCase();
+    }
+
+    // Add location bias if provided
+    if (widget.latitude != null && widget.longitude != null) {
+      if (widget.radius != null) {
+        requestBody["locationBias"] = {
+          "circle": {
+            "center": {
+              "latitude": widget.latitude,
+              "longitude": widget.longitude,
+            },
+            "radius": widget.radius!.toDouble(),
+          },
+        };
+      } else {
+        // Use a small rectangular area around the point
+        requestBody["locationBias"] = {
+          "rectangle": {
+            "low": {
+              "latitude": widget.latitude! - 0.01,
+              "longitude": widget.longitude! - 0.01,
+            },
+            "high": {
+              "latitude": widget.latitude! + 0.01,
+              "longitude": widget.longitude! + 0.01,
+            },
+          },
+        };
+      }
+    }
+
+    // Add place types if specified
+    if (widget.placeType != null) {
+      String apiType = widget.placeType!.apiString;
+      // Map some common legacy types to new API types or skip for broader results
+      if (apiType != "establishment" &&
+          apiType != "geocode" &&
+          apiType != "address") {
+        requestBody["includedPrimaryTypes"] = [apiType];
+      }
+    }
+
+    // Cancel previous request and create new token
+    if (_cancelToken != null && !_cancelToken!.isCancelled) {
+      _cancelToken?.cancel();
+    }
+    _cancelToken = CancelToken();
 
     try {
       Options options = Options(
@@ -184,19 +235,12 @@ class _GooglePlaceAutoCompleteTextFieldState
         },
       );
 
-      print("New API Request URL: $apiURL");
-      print("New API Request Body: $requestBody");
-      print("New API Headers: ${options.headers}");
-
       Response response = await _dio.post(
         apiURL,
         data: requestBody,
         options: options,
         cancelToken: _cancelToken,
       );
-
-      print("New API Response Status: ${response.statusCode}");
-      print("New API Response Data: ${response.data}");
 
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
@@ -271,14 +315,13 @@ class _GooglePlaceAutoCompleteTextFieldState
         Overlay.of(context).insert(this._overlayEntry!);
       }
     } catch (e) {
-      print("New API Error: $e");
-      if (e is DioException) {
-        print("DioError type: ${e.type}");
-        print("DioError message: ${e.message}");
-        print("DioError response: ${e.response?.data}");
+      // Don't show error for cancelled requests
+      if (e is DioException && e.type == DioExceptionType.cancel) {
+        return; // Silently ignore cancelled requests
       }
+
       var errorHandler = ErrorHandler.internal().handleError(e);
-      _showSnackBar("New API Error: ${errorHandler.message}");
+      _showSnackBar("${errorHandler.message}");
     }
   }
 
@@ -308,10 +351,11 @@ class _GooglePlaceAutoCompleteTextFieldState
           "&location=${widget.latitude},${widget.longitude}&radius=${widget.radius}";
     }
 
-    if (_cancelToken?.isCancelled == false) {
+    // Cancel previous request and create new token
+    if (_cancelToken != null && !_cancelToken!.isCancelled) {
       _cancelToken?.cancel();
-      _cancelToken = CancelToken();
     }
+    _cancelToken = CancelToken();
 
     try {
       String proxyURL = "https://cors-anywhere.herokuapp.com/";
@@ -347,6 +391,10 @@ class _GooglePlaceAutoCompleteTextFieldState
         Overlay.of(context).insert(this._overlayEntry!);
       }
     } catch (e) {
+      // Don't show error for cancelled requests
+      if (e is DioException && e.type == DioExceptionType.cancel) {
+        return; // Silently ignore cancelled requests
+      }
       var errorHandler = ErrorHandler.internal().handleError(e);
       _showSnackBar("${errorHandler.message}");
     }
@@ -505,7 +553,7 @@ class _GooglePlaceAutoCompleteTextFieldState
 
   void clearData() {
     widget.textEditingController.clear();
-    if (_cancelToken?.isCancelled == false) {
+    if (_cancelToken != null && !_cancelToken!.isCancelled) {
       _cancelToken?.cancel();
     }
 

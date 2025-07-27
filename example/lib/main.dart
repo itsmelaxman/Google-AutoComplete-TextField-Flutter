@@ -84,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
           suffixIcon: Icon(Icons.new_releases, color: Colors.green),
         ),
         debounceTime: 400,
-        countries: ["us", "in"],
+        countries: ["us", "in", "np"],
         isLatLngRequired: true,
         placeType: PlaceType.establishment,
         getPlaceDetailWithLatLng: (Prediction prediction) {
