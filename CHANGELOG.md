@@ -1,22 +1,50 @@
-## 1.0.0
+## 3.0.0
 
-* Initial commit.
+🚀 **Major Update: Google Places API (v1) Support**
 
-## 2.0.0
+### Added
+- ✅ **NEW**: Google Places API (v1) support with POST requests and JSON body
+- ✅ **NEW**: `useNewAPI` parameter to choose between new API (v1) and legacy API
+- ✅ **NEW**: Enhanced place types support for new API
+- ✅ **NEW**: Improved location biasing with new API
+- ✅ **NEW**: Better error handling and API key validation
+- ✅ **NEW**: Support for X-Goog-Api-Key header authentication
+- ✅ **NEW**: Updated example with side-by-side comparison of both APIs
 
-* Support country code
+### Changed
+- 🔄 **BREAKING**: Widget constructor now requires `const` and proper final fields
+- 🔄 **BREAKING**: Default API is now the new Places API (v1) (`useNewAPI: true`)
+- 🔄 **IMPROVED**: Better performance with new API
+- 🔄 **IMPROVED**: Enhanced null safety throughout the codebase
+- 🔄 **IMPROVED**: Updated documentation with migration guide
 
-## 2.0.1
+### Deprecated
+- ⚠️ Legacy Google Places API support (still available with `useNewAPI: false`)
 
-* Support multiple countries
+### Migration Guide
+- For existing users: Add `useNewAPI: false` to maintain legacy behavior
+- For new users: Use default settings to get new API (v1) benefits
+- Update your Google Cloud Console to enable "Places API (New)"
+
+## 2.0.3
+
+* Remove place-type field and improve the accuracy of search result
 
 ## 2.0.2
 
 * Get LatLng from Place detail
 
-## 2.0.3
+## 2.0.1
 
-* Remove place-type field and improve the accuracy of search result
+* Support multiple countries
+
+## 2.0.0
+
+* Support country code
+
+## 1.0.0
+
+* Initial commit.
 
 ## 2.0.4
 

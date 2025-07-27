@@ -1,27 +1,45 @@
 buildscript {
-    ext.kotlin_version = '1.8.21'
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.0.1'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.android.tools.build:gradle:8.7.0'
+        classpath 'com.google.gms:google-services:4.3.13'
     }
 }
 
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }
 
 rootProject.buildDir = '../build'
+
+// Keep this to redirect build dirs
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
+
+// Make sure subprojects like plugins use correct SDK versions
+subprojects {
+    afterEvaluate { project ->
+        if (project.plugins.hasPlugin('com.android.library')) {
+            android {
+                compileSdkVersion = 35
+                defaultConfig {
+                    minSdkVersion 23
+                    targetSdkVersion 35
+                }
+            }
+        }
+    }
+}
+
+// Ensure evaluation order
 subprojects {
     project.evaluationDependsOn(':app')
 }
