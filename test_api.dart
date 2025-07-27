@@ -6,7 +6,7 @@ void main() async {
 
 Future<void> testNewAPI() async {
   const String apiURL = "https://places.googleapis.com/v1/places:autocomplete";
-  const String apiKey = "your-google-api-key";
+  const String apiKey = "AIzaSyDUzmngsDFU_EGojKTtXl2fttwqGnuuwqE";
 
   Map<String, dynamic> requestBody = {"input": "restaurant"};
 
