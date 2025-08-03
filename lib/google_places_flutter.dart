@@ -145,9 +145,12 @@ class _GooglePlaceAutoCompleteTextFieldState
             (!widget.isCrossBtnShown)
                 ? SizedBox()
                 : isCrossBtn && _showCrossIconWidget()
-                ? IconButton(
-                  onPressed: () => clearData(),
-                  icon: Icon(Icons.close),
+                ? Container(
+                  decoration: _getCrossButtonDecoration(),
+                  child: IconButton(
+                    onPressed: () => clearData(),
+                    icon: Icon(Icons.close),
+                  ),
                 )
                 : SizedBox(),
           ],
@@ -581,6 +584,23 @@ class _GooglePlaceAutoCompleteTextFieldState
       // and use it to show a SnackBar.
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
+  }
+
+  BoxDecoration _getCrossButtonDecoration() {
+    final containerDecoration =
+        widget.boxDecoration ??
+        BoxDecoration(
+          shape: BoxShape.rectangle,
+          border: Border.all(color: Colors.grey, width: 0.6),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        );
+
+    return BoxDecoration(
+      shape: BoxShape.circle,
+      border: containerDecoration.border,
+      color: containerDecoration.color ?? Colors.grey.withValues(alpha: 0.1),
+      boxShadow: containerDecoration.boxShadow,
+    );
   }
 }
 
